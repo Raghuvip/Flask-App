@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+
+<body style="background-color: azure;">
+    <h2>SignUp Page</h2>
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <lable for="firstname"><b>First Name : </b></lable>
+        {{ form.firstname }}<br><br><br>
+        <lable for="lastname"><b>Last Name : </b></lable>
+        {{ form.lastname }}<br><br><br>
+        <lable for="username"><b>User Name : </b></lable>
+        {{ form.username }}<br><br><br>
+        <label for="email"><b>Email : </b></label>
+        {{ form.email }}<br><br><br>
+        <lable for="password"><b>Password : </b></lable>
+        {{ form.password }}<br><br><br>
+        {{ form.submit }}<br><br><br>
+    </form>
+
+    <a href="{{ url_for('login') }}">Already have an account? Log In</a>
+</body>
+
+</html>
