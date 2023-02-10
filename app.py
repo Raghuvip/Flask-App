@@ -3,11 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from werkzeug.utils import secure_filename
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 import os
+import sqlite3
 
 app = Flask(__name__)
 app.app_context().push()
@@ -54,7 +54,7 @@ class RegisterForm(FlaskForm):
                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
 
     email = StringField(validators=[
-                           InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Email"})
+                           InputRequired(), Length(min=4, max=50)], render_kw={"placeholder": "Email"})
 
 
     password = PasswordField(validators=[
@@ -80,27 +80,6 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-# class UploadForm(FlaskForm):
-#     file = FileField()
-
-# @app.route('/countwords', methods=['GET', 'POST'])
-# @login_required
-# def countwords():
-#     form = UploadForm()
-    
-#     if form.validate_on_submit():
-#         filename = secure_filename(form.file.data.filename)
-#         file = request.files['file'].read().decode()
-#         # form.file.data.save('uploads/' + filename)
-#         print(file)
-#         with open(filename, "r") as file1:
-#             read_content = file1.read()
-#             print(read_content)
-#         return redirect(url_for('upload'))
-
-#     return render_template('countwords.html', form=form)
-
-
 @app.route('/')
 @app.route('/home')
 @app.route('/index')
@@ -117,8 +96,23 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
+                conn = None
+                try:
+                    conn = sqlite3.connect('database.db')
+                    cur = conn.cursor()
+                    cur.execute("SELECT * FROM user WHERE username=?", (user.username,))
+
+                    rows = cur.fetchall()
+                    print(rows[0])
+                    #for row in rows:
+                        #print(row)
+                except Error as e:
+                    print(e)
                 # print(user.username)
-                session['user'] = user.username
+                session['user'] = rows[0]
+                #session['fname'] = user.firstname
+                #session['lname'] = user.lastname
+                #session['email'] = user.email
                 return redirect(url_for('countwords'))
         else:
             return render_template('login.html', form=form, message="register first!")
@@ -128,7 +122,7 @@ def login():
 @app.route('/countwords', methods=['GET', 'POST'])
 @login_required
 def countwords():
-    user = session['user']
+    user = session['user']#, session['fname'], session['lname'], session['email']]
     return render_template('countwords.html', user=user)
 
 
@@ -155,4 +149,4 @@ def register():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
