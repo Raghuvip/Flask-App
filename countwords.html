@@ -9,7 +9,10 @@
 </head>
 
 <body style="background-color: azure;">
-    <h1>Hello {{ user }}!! you are logged in.</h1>
+    <h1>Hello {{ user[1] }}!! you are logged in.</h1>
+    <h1>First name: {{ user[2] }}</h1>
+    <h1>Last name: {{ user[3] }}</h1>
+    <h1>Email:  {{ user[4] }}</h1>
     <a href="{{url_for('logout')}}">Click here to logout</a>
 </body>
 
